@@ -1,0 +1,14 @@
+{
+    "stages": [
+        {
+            "stage": 1,
+            "definition": "block_layout_stage1",
+            "foreground": "",
+            "background": "",
+            "bonus": "",
+            "target_score": 5000,
+            "target_time": 30,
+            "time_bonus_multiplier": 100
+        }
+    ]
+}

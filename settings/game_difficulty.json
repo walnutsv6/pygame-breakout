@@ -1,0 +1,60 @@
+{
+    "difficulties":
+    {
+        "easy": {
+            "name": "Easy",
+            "description": "お手軽に遊べる設定で、アイテムはパワーボール（貫通）のみです。\nボーナス画像は出現しません。（スコア補正-50％）",
+            "score_adjustment": 0.5,
+            "balls": 7,
+            "initial_ball_speed": 8,
+            "max_ball_speed": 8,
+            "block_strength_adjustment": -1,
+            "items_enable": ["power_ball"],
+            "get_bonus_image": false
+        },
+        "normal": {
+            "name": "Normal",
+            "description": "標準的な設定です。\nNormal以上では高得点でクリアすると、ボーナス画像が出現します。",
+            "score_adjustment": 1.0,
+            "balls": 3,
+            "initial_ball_speed": 8,
+            "max_ball_speed": 18,
+            "block_strength_adjustment": 0,
+            "items_enable": ["wide_paddle", "multi_ball", "slow_ball", "extra_life", "bonus_score", "power_ball", "paddle_shot"],
+            "get_bonus_image": true
+        },
+        "hard": {
+            "name": "Hard",
+            "description": "ボールの速度がやや速くなります。\nエクストラボールのアイテムが出現しなくなります。\n（スコア補正+20％）",
+            "score_adjustment": 1.2,
+            "balls": 3,
+            "initial_ball_speed": 10,
+            "max_ball_speed": 20,
+            "block_strength_adjustment": 0,
+            "items_enable": ["wide_paddle", "multi_ball", "bonus_score", "power_ball", "paddle_shot"],
+            "get_bonus_image": true
+        },
+        "extreme": {
+            "name": "Extreme",
+            "description": "ミスが許されない、非常に難しい設定です。\n一部のアイテムが出現しなくなり、\nブロックの耐久度が上昇します。（スコア補正+50％）",
+            "score_adjustment": 1.5,
+            "balls": 1,
+            "initial_ball_speed": 12,
+            "max_ball_speed": 24,
+            "block_strength_adjustment": 1,
+            "items_enable": ["multi_ball", "bonus_score", "power_ball", "paddle_shot"],
+            "get_bonus_image": true
+        },
+        "medley": {
+            "name": "Medley",
+            "description": "メドレーモード専用設定です。\nアイテムとボール数はExtemeと同じですが、\nボールスピードとブロック耐久度はHardと同じです。",
+            "score_adjustment": 1,
+            "balls": 1,
+            "initial_ball_speed": 10,
+            "max_ball_speed": 20,
+            "block_strength_adjustment": 0,
+            "items_enable": ["multi_ball", "bonus_score", "power_ball", "paddle_shot"],
+            "get_bonus_image": true
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "charas":[
+        {
+            "name": "TEST",
+            "folder": "test",
+            "available_difficulties": ["easy", "normal", "extreme"],
+            "description": ""
+        }
+    ]
+}
