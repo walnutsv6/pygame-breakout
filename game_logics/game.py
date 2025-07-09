@@ -52,20 +52,17 @@ class Game:
         self.combo_display_timer = 0  # コンボ表示用タイマー（30フレーム = 0.5秒）
         
         # 前景画像の読み込み
-        try:
-            foreground_path = f"{self.current_stage_config['folder']}/{self.current_stage_config['foreground']}"
-            self.foreground = pygame.image.load(foreground_path)
-            self.foreground = pygame.transform.scale(self.foreground, (SCREEN_WIDTH, SCREEN_HEIGHT))
-        except (pygame.error, FileNotFoundError):
-            print(f"前景画像が見つかりません。白い前景を使用します。")
-            self.foreground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-            self.foreground.fill(WHITE)
+        self.foreground = self.load_foreground_image()
         
         # 背景画像の読み込み
         try:
             background_path = f"{self.current_stage_config['folder']}/{self.current_stage_config['background']}"
-            self.background = pygame.image.load(background_path)
-            self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            if self.current_stage_config['background']:  # 背景画像のファイル名が指定されている場合
+                self.background = pygame.image.load(background_path)
+                self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            else:
+                # 背景画像が指定されていない場合はデフォルト背景を試す
+                raise FileNotFoundError("No background specified")
         except (pygame.error, FileNotFoundError):
             print(f"背景画像が見つかりません。元の背景を使用します。")
             try:
@@ -1280,6 +1277,59 @@ class Game:
             "bonus2": stage_data.get("bonus2", ""),
             "target_score2": stage_data.get("target_score2", 0)
         }
+    
+    def load_foreground_image(self):
+        """前景画像を読み込む。画像がない場合は、ブロック配置に基づいて色付きの前景を生成"""
+        try:
+            foreground_path = f"{self.current_stage_config['folder']}/{self.current_stage_config['foreground']}"
+            if self.current_stage_config['foreground']:  # 前景画像のファイル名が指定されている場合
+                foreground = pygame.image.load(foreground_path)
+                return pygame.transform.scale(foreground, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            else:
+                # 前景画像が指定されていない場合は、色付きの前景を生成
+                return self.create_colored_foreground()
+        except (pygame.error, FileNotFoundError):
+            print(f"前景画像が見つかりません。色付きの前景を使用します。")
+            return self.create_colored_foreground()
+    
+    def create_colored_foreground(self):
+        """ブロック配置に基づいて色付きの前景画像を生成"""
+        # 前景画像のベースサーフェスを作成
+        foreground = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        foreground.fill(WHITE)  # 基本は白で塗りつぶし
+        
+        # CSVファイルからブロック配置を読み込み
+        csv_path = f"{self.current_stage_config['folder']}/{self.current_stage_config['definition']}.csv"
+        block_layout = self.load_block_layout_from_csv(csv_path)
+        
+        # stage.jsonにforeground_colorsが定義されている場合はそれを使用
+        foreground_colors = self.current_stage_config.get('foreground_colors', {})
+        if isinstance(foreground_colors, list):
+            # リスト形式の場合は辞書に変換
+            color_dict = {}
+            for item in foreground_colors:
+                for key, value in item.items():
+                    color_dict[int(key)] = tuple(value)
+            foreground_colors = color_dict
+        
+        # ブロック配置に基づいて各ブロックの色を設定
+        for row in range(len(block_layout)):
+            for col in range(len(block_layout[row])):
+                durability = block_layout[row][col]
+                if durability != 0:  # ブロックがある場所
+                    x = col * BLOCK_SIZE
+                    y = row * BLOCK_SIZE + GAME_AREA_Y
+                    
+                    # 色を決定（foreground_colorsが優先、なければBLOCK_COLORS）
+                    if durability in foreground_colors:
+                        color = foreground_colors[durability]
+                    else:
+                        color = BLOCK_COLORS.get(durability, WHITE)
+                    
+                    if color:  # Noneでない場合のみ描画
+                        pygame.draw.rect(foreground, color, (x, y, BLOCK_SIZE, BLOCK_SIZE))
+        
+        return foreground
     
     def load_block_layout_from_csv(self, csv_path):
         """CSVファイルからブロック配置を読み込む"""
